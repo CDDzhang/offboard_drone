@@ -1,0 +1,8 @@
+prefix=/home/zhangcheng/catkin_ws/src/learning_communication/cmake-build-debug/devel
+
+Name: learning_communication
+Description: Description of learning_communication
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
