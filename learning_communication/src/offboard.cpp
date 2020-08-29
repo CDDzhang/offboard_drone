@@ -4,12 +4,14 @@
 
 #include <ros/ros.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/TwistStamped.h>
 #include <mavros_msgs/CommandBool.h>
 #include <mavros_msgs/SetMode.h>
 #include <mavros_msgs/State.h>
 #include <learning_communication/OffboardState.h>
 
 geometry_msgs::PoseStamped pose;
+geometry_msgs::Twist vel;
 
 
 learning_communication::OffboardState current_state;
@@ -35,6 +37,7 @@ int main(int argc,char **argv)
 
     ros::Subscriber state_sub = nh.subscribe<mavros_msgs::State>("mavros/state",10,state_cb);
     ros::Publisher local_pos_pub = nh.advertise<geometry_msgs::PoseStamped>("mavros/setpoint_position/local",10);
+    ros::Publisher local_vel_pub = nh.advertise<geometry_msgs::TwistStamped>("mavros/setpoint_velocity/cmd_vel",10);
     ros::ServiceClient arming_client = nh.serviceClient<mavros_msgs::CommandBool>("mavros/cmd/arming");
     ros::ServiceClient set_mode_client = nh.serviceClient<mavros_msgs::SetMode>("mavros/set_mode");
     ros::Subscriber position_sub = nh.subscribe<learning_communication::OffboardState>("order_position",10,position_cb);
@@ -42,6 +45,10 @@ int main(int argc,char **argv)
     pose.pose.position.x = 0;
     pose.pose.position.y = 0;
     pose.pose.position.z = 0;
+    vel.linear.x = 0.5;
+    vel.linear.y = 0.5;
+    vel.linear.z = 0.5;
+
 
     ros::Rate rate(20.0);
 
@@ -87,6 +94,7 @@ int main(int argc,char **argv)
         }
         ROS_INFO("command height: [%f] [m]",pose.pose.position.z);
         local_pos_pub.publish(pose);
+        local_vel_pub.publish(vel);
 
         ros::spinOnce();
         rate.sleep();
